@@ -1,10 +1,16 @@
 const express = require('express');
+const knex = require('knex');
 const helmet = require('helmet');
+
+const knexConfig = require('./knexfile.js');
 
 const server = express();
 
 server.use(express.json());
 server.use(helmet());
+
+// connect to database
+const db = knex(knexConfig.development);
 
 // endpoints here
 server.get('/', (req, res) => {
