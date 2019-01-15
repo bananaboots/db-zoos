@@ -7,6 +7,17 @@ server.use(express.json());
 server.use(helmet());
 
 // endpoints here
+server.get('/', (req, res) => {
+  res.send('api working')
+});
+
+// list zoos
+
+// add zoo
+
+// update zoo
+
+// delete zoo
 
 const port = 3300;
 server.listen(port, function() {
