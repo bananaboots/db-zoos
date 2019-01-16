@@ -1,37 +1,42 @@
 const express = require('express');
-const knex = require('knex');
-const helmet = require('helmet');
+const configMiddleware = require('./config/middleware.js');
 
+const knex = require('knex');
 const knexConfig = require('./knexfile.js');
 
 const server = express();
 
-server.use(express.json());
-server.use(helmet());
+// apply middleware
+configMiddleware(server);
 
+// connect to database
+const db = knex(knexConfig.development);
+
+// generic 500 error handler
 const errorHandler = (err) => res.status(500).json({
     message: 'Sorry, an error occurred while handling your request',
     error: err
   });
 
-// connect to database
-const db = knex(knexConfig.development);
-
-// endpoints here
+// endpoints start here
 
 // list zoos
 server.get('/api/zoos', async (req, res) => {
+
   try {
     const zoos = await db('zoos');
     res.status(200).json(zoos);
   } catch (err) {
     errorHandler(err);
   }
+
 });
 
 // get zoo by ID
 server.get('/api/zoos/:id', async (req, res) => {
+
   const { id } = req.params;
+
   try {
     const zoo = await db('zoos')
       .select()
@@ -41,11 +46,14 @@ server.get('/api/zoos/:id', async (req, res) => {
   } catch (err) {
     errorHandler(err);
   }
+
 });
 
 // add zoo
 server.post('/api/zoos', async (req, res) => {
+
   const { name } = req.body;
+
   if (!name) {
     res.status(400).json({
       message: 'Please provide a name.'
@@ -60,11 +68,14 @@ server.post('/api/zoos', async (req, res) => {
   } catch (err) {
     errorHandler(err);
   }
+
 });
 
 // update zoo
 server.put('/api/zoos/:id', async (req, res) => {
+  
   const changes = req.body;
+
   try {
     const updatedZoo = await db('zoos')
       .where({ id: req.params.id })
@@ -73,11 +84,14 @@ server.put('/api/zoos/:id', async (req, res) => {
   } catch (err) {
     errorHandler(err);
   }
+  
 });
 
 // delete zoo
 server.delete('/api/zoos/:id', async (req, res) => {
+
   const { id } = req.params;
+
   try {
     const deletedCount = await db('zoos')
       .where('id', id)
@@ -92,6 +106,7 @@ server.delete('/api/zoos/:id', async (req, res) => {
   } catch (err) {
     errorHandler(err);
   }
+
 });
 
 const port = 3300;
