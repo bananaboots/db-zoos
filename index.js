@@ -33,7 +33,7 @@ server.get('/api/zoos', async (req, res) => {
 server.get('/api/zoos/:id', async (req, res) => {
   const { id } = req.params;
   try {
-    const zoo = await db
+    const zoo = await db('zoos')
       .select()
       .from('zoos')
       .where('id', id);
@@ -53,7 +53,7 @@ server.post('/api/zoos', async (req, res) => {
   }
 
   try {
-    const id = await db
+    const id = await db('zoos')
       .insert({ name })
       .into('zoos');
     res.status(201).json(id);
@@ -63,8 +63,36 @@ server.post('/api/zoos', async (req, res) => {
 });
 
 // update zoo
+server.put('/api/zoos/:id', async (req, res) => {
+  const changes = req.body;
+  try {
+    const updatedZoo = await db('zoos')
+      .where({ id: req.params.id })
+      .update(changes);
+    res.status(201).json(updatedZoo);
+  } catch (err) {
+    errorHandler(err);
+  }
+});
 
 // delete zoo
+server.delete('/api/zoos/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const deletedCount = await db('zoos')
+      .where('id', id)
+      .del();
+    if (deletedCount === 1) {
+      res.status(200).json(deletedCount);
+    } else {
+      res.status(404).json({
+        message: 'Sorry, the zoo with this ID could not be found.'
+      });
+    }
+  } catch (err) {
+    errorHandler(err);
+  }
+});
 
 const port = 3300;
 server.listen(port, function() {
