@@ -44,6 +44,23 @@ server.get('/api/zoos/:id', async (req, res) => {
 });
 
 // add zoo
+server.post('/api/zoos', async (req, res) => {
+  const { name } = req.body;
+  if (!name) {
+    res.status(400).json({
+      message: 'Please provide a name.'
+    })
+  }
+
+  try {
+    const id = await db
+      .insert({ name })
+      .into('zoos');
+    res.status(201).json(id);
+  } catch (err) {
+    errorHandler(err);
+  }
+});
 
 // update zoo
 
