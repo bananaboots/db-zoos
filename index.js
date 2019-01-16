@@ -9,15 +9,27 @@ const server = express();
 server.use(express.json());
 server.use(helmet());
 
+const errorHandler = (err) => res.status(500).json({
+    message: 'Sorry, an error occurred while handling your request',
+    error: err
+  });
+
 // connect to database
 const db = knex(knexConfig.development);
 
 // endpoints here
-server.get('/', (req, res) => {
-  res.send('api working')
-});
 
 // list zoos
+server.get('/api/zoos', async (req, res) => {
+  try {
+    const zoos = await db('zoos');
+    res.status(200).json(zoos);
+  } catch (err) {
+    errorHandler(err);
+  }
+});
+
+// get zoo by ID
 
 // add zoo
 
