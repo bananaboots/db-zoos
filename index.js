@@ -30,6 +30,18 @@ server.get('/api/zoos', async (req, res) => {
 });
 
 // get zoo by ID
+server.get('/api/zoos/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const zoo = await db
+      .select()
+      .from('zoos')
+      .where('id', id);
+    res.status(200).json(zoo);
+  } catch (err) {
+    errorHandler(err);
+  }
+});
 
 // add zoo
 
